@@ -132,3 +132,23 @@ for order in orders:
 print("\nOrders per month:")
 for month in sorted(orders_per_month.keys()):
     print(f"  {month}: {orders_per_month[month]} orders")
+
+# Demand forecasts (static data) including restocking fields:
+# unit_cost, current_stock, supplier, lead_time_days
+demand_forecasts = [
+    {"id": "1", "item_sku": "WDG-001", "item_name": "Industrial Widget Type A", "current_demand": 300, "forecasted_demand": 450, "trend": "increasing", "period": "Next 30 days", "unit_cost": 24.99, "current_stock": 120, "supplier": "Apex Industrial Supply", "lead_time_days": 7},
+    {"id": "2", "item_sku": "BRG-102", "item_name": "Steel Bearing Assembly", "current_demand": 150, "forecasted_demand": 152, "trend": "stable", "period": "Next 30 days", "unit_cost": 48.50, "current_stock": 100, "supplier": "Northwind Bearings", "lead_time_days": 10},
+    {"id": "3", "item_sku": "GSK-203", "item_name": "High-Temperature Gasket", "current_demand": 500, "forecasted_demand": 600, "trend": "increasing", "period": "Next 30 days", "unit_cost": 15.75, "current_stock": 200, "supplier": "ThermoSeal Corp", "lead_time_days": 14},
+    {"id": "4", "item_sku": "MTR-304", "item_name": "Electric Motor 5HP", "current_demand": 50, "forecasted_demand": 35, "trend": "decreasing", "period": "Next 30 days", "unit_cost": 389.00, "current_stock": 40, "supplier": "Voltage Dynamics", "lead_time_days": 21},
+    {"id": "5", "item_sku": "FLT-405", "item_name": "Oil Filter Cartridge", "current_demand": 800, "forecasted_demand": 950, "trend": "increasing", "period": "Next 30 days", "unit_cost": 8.40, "current_stock": 300, "supplier": "CleanFlow Parts", "lead_time_days": 5},
+    {"id": "6", "item_sku": "VLV-506", "item_name": "Pressure Relief Valve", "current_demand": 120, "forecasted_demand": 121, "trend": "stable", "period": "Next 30 days", "unit_cost": 72.25, "current_stock": 150, "supplier": "Pressure Systems Ltd", "lead_time_days": 12},
+    {"id": "7", "item_sku": "PSU-501", "item_name": "5V 10A Switching Power Supply", "current_demand": 250, "forecasted_demand": 252, "trend": "stable", "period": "Next 30 days", "unit_cost": 18.90, "current_stock": 200, "supplier": "Apex Industrial Supply", "lead_time_days": 9},
+    {"id": "8", "item_sku": "SNR-420", "item_name": "Temperature Sensor Module", "current_demand": 180, "forecasted_demand": 182, "trend": "stable", "period": "Next 30 days", "unit_cost": 31.20, "current_stock": 170, "supplier": "Sensortech GmbH", "lead_time_days": 15},
+    {"id": "9", "item_sku": "CTL-330", "item_name": "Logic Controller Board", "current_demand": 95, "forecasted_demand": 96, "trend": "stable", "period": "Next 30 days", "unit_cost": 64.00, "current_stock": 60, "supplier": "Sensortech GmbH", "lead_time_days": 18},
+]
+
+with open('data/demand_forecasts.json', 'w') as f:
+    json.dump(demand_forecasts, f, indent=2)
+    f.write("\n")
+
+print(f"Generated {len(demand_forecasts)} demand forecasts")

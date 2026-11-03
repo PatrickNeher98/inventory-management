@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Architecture - Factory Inventory Management System</title>
+<style>
+  :root { --ink:#0f172a; --muted:#64748b; --line:#e2e8f0; --bg:#f8fafc; --blue:#2563eb; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font:15px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif; }
+  header { background:var(--ink); color:#fff; padding:40px 24px; }
+  header .in, main { max-width:1000px; margin:0 auto; }
+  header h1 { margin:0 0 6px; font-size:28px; }
+  header p { margin:0; color:#cbd5e1; }
+  main { padding:24px; }
+  section { background:#fff; border:1px solid var(--line); border-radius:8px; padding:24px; margin:20px 0; }
+  h2 { margin:0 0 12px; font-size:20px; padding-bottom:8px; border-bottom:1px solid var(--line); }
+  h3 { margin:18px 0 6px; font-size:15px; }
+  p { margin:8px 0; }
+  table { width:100%; border-collapse:collapse; font-size:14px; margin:8px 0; }
+  th, td { text-align:left; padding:8px 10px; border-bottom:1px solid var(--line); vertical-align:top; }
+  th { background:var(--bg); color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  code { background:#f1f5f9; padding:1px 5px; border-radius:4px; font:13px ui-monospace,Menlo,Consolas,monospace; }
+  ol li, ul li { margin:5px 0; }
+  .muted { color:var(--muted); }
+  .note { border-left:3px solid var(--muted); background:var(--bg); padding:8px 14px; margin:12px 0; font-size:14px; }
+  .grid { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }
+  @media (max-width:760px){ .grid{grid-template-columns:1fr;} }
+  .y { color:#166534; font-weight:600; } .n { color:#94a3b8; }
+  svg text { font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; }
+</style>
+</head>
+<body>
+<header><div class="in">
+  <h1>Factory Inventory Management System</h1>
+  <p>Architecture overview: Vue 3 frontend, FastAPI backend, in-memory JSON data</p>
+</div></header>
+<main>
+
+<section id="overview">
+<h2>1. Overview</h2>
+<p>A full-stack demo application for viewing factory inventory, orders, demand forecasts, backlog and spending. The Vue 3 single-page app (port 3000) calls a Python FastAPI service (port 8001) over HTTP. There is no database: at import time <code>server/mock_data.py</code> reads JSON files from <code>server/data/</code> into Python lists and dicts, and every request filters those structures in memory.</p>
+<p class="muted">Four global filters (Time Period, Warehouse, Category, Order Status) are shared across views and sent to the API as query parameters.</p>
+</section>
+
+<section id="diagram">
+<h2>2. System architecture</h2>
+<svg viewBox="0 0 960 330" width="100%" role="img" aria-label="Architecture diagram">
+  <defs><marker id="a" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#64748b"/></marker></defs>
+  <rect x="10" y="10" width="440" height="310" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="26" y="34" font-size="13" font-weight="700" fill="#0f172a">Browser - Vue 3 + Vite (:3000)</text>
+  <rect x="26" y="48" width="190" height="60" rx="6" fill="#fff" stroke="#64748b"/>
+  <text x="121" y="72" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Views</text>
+  <text x="121" y="92" text-anchor="middle" font-size="11" fill="#64748b">Dashboard, Inventory, Orders...</text>
+  <rect x="236" y="48" width="198" height="60" rx="6" fill="#fff" stroke="#64748b"/>
+  <text x="335" y="72" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Components</text>
+  <text x="335" y="92" text-anchor="middle" font-size="11" fill="#64748b">FilterBar, modals, menus</text>
+  <rect x="26" y="128" width="408" height="60" rx="6" fill="#fff" stroke="#64748b"/>
+  <text x="230" y="152" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">Composables (shared singletons)</text>
+  <text x="230" y="172" text-anchor="middle" font-size="11" fill="#64748b">useFilters, useI18n, useAuth</text>
+  <rect x="26" y="228" width="408" height="60" rx="6" fill="#0f172a"/>
+  <text x="230" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#fff">client/src/api.js</text>
+  <text x="230" y="272" text-anchor="middle" font-size="11" fill="#cbd5e1">axios, base URL http://localhost:8001/api</text>
+  <line x1="121" y1="108" x2="121" y2="128" stroke="#64748b" marker-end="url(#a)"/>
+  <line x1="335" y1="108" x2="335" y2="128" stroke="#64748b" marker-end="url(#a)"/>
+  <line x1="230" y1="188" x2="230" y2="228" stroke="#64748b" marker-end="url(#a)"/>
+  <line x1="450" y1="258" x2="500" y2="258" stroke="#64748b" stroke-width="2" marker-end="url(#a)"/>
+  <text x="475" y="248" text-anchor="middle" font-size="11" fill="#64748b">HTTP</text>
+  <rect x="500" y="10" width="450" height="310" rx="8" fill="#f8fafc" stroke="#e2e8f0"/>
+  <text x="516" y="34" font-size="13" font-weight="700" fill="#0f172a">Server - FastAPI (:8001)</text>
+  <rect x="516" y="48" width="418" height="60" rx="6" fill="#fff" stroke="#64748b"/>
+  <text x="725" y="72" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">server/main.py - routes</text>
+  <text x="725" y="92" text-anchor="middle" font-size="11" fill="#64748b">/api/* endpoints, CORS middleware, Pydantic response models</text>
+  <rect x="516" y="128" width="418" height="60" rx="6" fill="#fff" stroke="#64748b"/>
+  <text x="725" y="152" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">apply_filters / filter_by_month</text>
+  <text x="725" y="172" text-anchor="middle" font-size="11" fill="#64748b">list comprehensions over in-memory data</text>
+  <rect x="516" y="228" width="200" height="60" rx="6" fill="#fff" stroke="#64748b"/>
+  <text x="616" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">mock_data.py</text>
+  <text x="616" y="272" text-anchor="middle" font-size="11" fill="#64748b">loads at import</text>
+  <rect x="750" y="228" width="184" height="60" rx="6" fill="#e2e8f0" stroke="#64748b"/>
+  <text x="842" y="252" text-anchor="middle" font-size="13" font-weight="600" fill="#0f172a">server/data/*.json</text>
+  <text x="842" y="272" text-anchor="middle" font-size="11" fill="#64748b">7 files</text>
+  <line x1="725" y1="108" x2="725" y2="128" stroke="#64748b" marker-end="url(#a)"/>
+  <line x1="650" y1="188" x2="616" y2="228" stroke="#64748b" marker-end="url(#a)"/>
+  <line x1="716" y1="258" x2="750" y2="258" stroke="#64748b" marker-end="url(#a)"/>
+</svg>
+</section>
+
+<section id="stack">
+<h2>3. Tech stack</h2>
+<table>
+<tr><th>Layer</th><th>Technology</th><th>Notes</th></tr>
+<tr><td>Frontend framework</td><td>Vue 3 (Composition API)</td><td><code>vue ^3.4.21</code></td></tr>
+<tr><td>Routing</td><td>vue-router 4</td><td>History mode; routes defined in <code>client/src/main.js</code></td></tr>
+<tr><td>Build / dev server</td><td>Vite 8 + @vitejs/plugin-vue</td><td>Dev server on port 3000; Node ^20.19 or &gt;=22.12</td></tr>
+<tr><td>HTTP client</td><td>axios</td><td>Wrapped by the <code>api</code> object in <code>api.js</code></td></tr>
+<tr><td>Charts / styling</td><td>Custom SVG, CSS Grid</td><td>No chart library dependency</td></tr>
+<tr><td>Backend</td><td>Python 3.11+, FastAPI, uvicorn</td><td>Run with <code>uv run python main.py</code> (port 8001)</td></tr>
+<tr><td>Validation</td><td>Pydantic 2</td><td><code>response_model</code> on inventory, orders, demand, backlog</td></tr>
+<tr><td>Data</td><td>JSON files, in memory</td><td>No database; changes are not persisted</td></tr>
+<tr><td>i18n</td><td>Custom <code>useI18n</code></td><td>en / ja; locale saved in localStorage</td></tr>
+<tr><td>Tests</td><td>pytest, FastAPI TestClient</td><td>httpx, pytest-asyncio, pytest-cov as dev dependencies</td></tr>
+</table>
+</section>
+
+<section id="flow">
+<h2>4. Data flow: a filter change</h2>
+<ol>
+<li>The user changes a select in <code>FilterBar.vue</code> (period, warehouse, category, status). Each select is bound with <code>v-model</code> to a ref from <code>useFilters()</code>.</li>
+<li>Those refs (<code>selectedPeriod</code>, <code>selectedLocation</code>, <code>selectedCategory</code>, <code>selectedStatus</code>) are module-level singletons, so every view sees the same state.</li>
+<li>The active view has a <code>watch</code> on the refs it uses and calls its <code>loadData()</code>. Dashboard and Orders watch all four; Inventory, Demand and Backlog watch warehouse and category; Spending watches period only.</li>
+<li><code>loadData()</code> calls <code>getCurrentFilters()</code>, which returns <code>{warehouse, category, status}</code> and maps the period to <code>month</code> when it is not <code>all</code>.</li>
+<li>The <code>api.js</code> method builds a query string, skipping any value equal to <code>all</code>, and issues the axios GET (the Dashboard runs several in parallel with <code>Promise.all</code>).</li>
+<li>The FastAPI route receives the optional query params, calls <code>apply_filters()</code> (warehouse, category, status; case-insensitive for category and status) and <code>filter_by_month()</code> (month <code>YYYY-MM</code> or quarter <code>Q1-2025</code> to <code>Q4-2025</code>, matched against <code>order_date</code>) over the in-memory lists.</li>
+<li>FastAPI validates the result against the Pydantic <code>response_model</code> and returns JSON.</li>
+<li>The view stores the raw response in refs (e.g. <code>allOrders</code>, <code>inventoryItems</code>); computed properties derive chart series, KPIs and tables, and the template re-renders.</li>
+</ol>
+<div class="note">Inventory has no time dimension, so the month filter is not applied to inventory. Currency display (USD or JPY at a fixed rate of 150) is applied client-side by <code>utils/currency.js</code> from the current locale; the API always returns USD values.</div>
+</section>
+
+<section id="api">
+<h2>5. API endpoints</h2>
+<p>Defined in <code>server/main.py</code>. Filter columns: Warehouse, Category, Status, Month (also accepts quarters).</p>
+<table>
+<tr><th>Endpoint</th><th>Returns</th><th>Warehouse</th><th>Category</th><th>Status</th><th>Month</th></tr>
+<tr><td><code>GET /api/inventory</code></td><td>List of InventoryItem</td><td class="y">yes</td><td class="y">yes</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/inventory/{item_id}</code></td><td>One InventoryItem (404 if missing)</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/orders</code></td><td>List of Order</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td></tr>
+<tr><td><code>GET /api/orders/{order_id}</code></td><td>One Order (404 if missing)</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/demand</code></td><td>List of DemandForecast</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/backlog</code></td><td>List of BacklogItem, with computed <code>has_purchase_order</code></td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/dashboard/summary</code></td><td>Inventory value, low-stock count, pending orders, backlog count, orders value</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td><td class="y">yes</td></tr>
+<tr><td><code>GET /api/spending/summary</code></td><td>Spending summary</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/spending/monthly</code></td><td>Monthly spending</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/spending/categories</code></td><td>Spending by category</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/spending/transactions</code></td><td>Recent transactions</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/reports/quarterly</code></td><td>Quarterly report data</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /api/reports/monthly-trends</code></td><td>Monthly trend data</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+<tr><td><code>GET /</code></td><td>Root message</td><td class="n">-</td><td class="n">-</td><td class="n">-</td><td class="n">-</td></tr>
+</table>
+<div class="note"><strong>Client/server mismatch.</strong> <code>api.js</code> defines calls to <code>/api/tasks</code> (GET, POST, DELETE, PATCH) and <code>/api/purchase-orders</code> (POST, and GET by backlog item), but no matching routes exist in <code>server/main.py</code>. The server loads <code>purchase_orders.json</code> and uses it only to compute <code>has_purchase_order</code>. The <code>CreatePurchaseOrderRequest</code> model is defined but unused by any route. Those client features (Tasks modal, purchase order creation) will receive 404 responses against the current backend.</div>
+<p class="muted">The server also allows all CORS origins (<code>allow_origins=["*"]</code>) and binds to <code>0.0.0.0</code>, which is appropriate for a local demo only.</p>
+</section>
+
+<section id="frontend">
+<h2>6. Frontend structure</h2>
+<div class="grid">
+<div>
+<h3>Views (<code>client/src/views</code>)</h3>
+<table>
+<tr><th>Route</th><th>View</th></tr>
+<tr><td><code>/</code></td><td>Dashboard</td></tr>
+<tr><td><code>/inventory</code></td><td>Inventory</td></tr>
+<tr><td><code>/orders</code></td><td>Orders</td></tr>
+<tr><td><code>/demand</code></td><td>Demand</td></tr>
+<tr><td><code>/spending</code></td><td>Spending</td></tr>
+<tr><td><code>/reports</code></td><td>Reports</td></tr>
+<tr><td class="muted">none</td><td>Backlog (not registered in the router)</td></tr>
+</table>
+</div>
+<div>
+<h3>Components</h3>
+<ul>
+<li><code>FilterBar</code> - four global filter selects</li>
+<li><code>ProfileMenu</code>, <code>ProfileDetailsModal</code></li>
+<li><code>LanguageSwitcher</code></li>
+<li><code>TasksModal</code></li>
+<li><code>ProductDetailModal</code></li>
+<li><code>BacklogDetailModal</code></li>
+<li><code>InventoryDetailModal</code></li>
+<li><code>CostDetailModal</code></li>
+</ul>
+</div>
+<div>
+<h3>Composables and utils</h3>
+<ul>
+<li><code>useFilters</code> - shared filter refs, <code>hasActiveFilters</code>, <code>resetFilters</code>, <code>getCurrentFilters</code></li>
+<li><code>useI18n</code> - <code>t()</code> with English fallback, locale in localStorage, derived currency</li>
+<li><code>useAuth</code> - mock current user (hardcoded, locale-aware)</li>
+<li><code>locales/en.js</code>, <code>locales/ja.js</code></li>
+<li><code>utils/currency.js</code> - USD to JPY formatting</li>
+</ul>
+</div>
+</div>
+<p><code>App.vue</code> renders the header, <code>FilterBar</code> and a <code>&lt;router-view&gt;</code>. Dashboard imports the product and backlog modals; Reports calls the <code>/api/reports/*</code> endpoints directly with axios and a hardcoded URL instead of going through <code>api.js</code>.</p>
+</section>
+
+<section id="testing">
+<h2>7. Testing and tooling</h2>
+<ul>
+<li><strong>Backend tests:</strong> <code>tests/backend</code> (<code>test_dashboard.py</code>, <code>test_inventory.py</code>, <code>test_misc_endpoints.py</code>) using pytest with FastAPI <code>TestClient</code> via a <code>client</code> fixture in <code>conftest.py</code>. Config in <code>tests/pytest.ini</code>. About 40 test functions.</li>
+<li><strong>Frontend tests:</strong> none configured; <code>client/package.json</code> has only <code>dev</code>, <code>build</code> and <code>preview</code> scripts. Browser checks use Playwright MCP tools against ports 3000 and 8001.</li>
+<li><strong>Data generation:</strong> <code>server/generate_data.py</code> and <code>scripts/</code> exist alongside the JSON data files.</li>
+<li><strong>Claude Code tooling (<code>.claude/</code>):</strong> agents (<code>vue-expert</code>, <code>code-reviewer</code>, <code>security-auditor</code>), commands (<code>start</code>, <code>stop</code>, <code>test</code>, <code>demo-branch</code>, <code>reset-branch</code>, <code>optimize</code>), the <code>backend-api-test</code> skill, hooks and MCP config.</li>
+<li><strong>Repository hygiene:</strong> the repository is public. <code>client/.npmrc</code> pins the public npm registry and <code>client/package-lock.json</code> is gitignored.</li>
+<li><strong>Run locally:</strong> <code>cd server &amp;&amp; uv run python main.py</code> and <code>cd client &amp;&amp; npm install &amp;&amp; npm run dev</code>. API docs are served by FastAPI at <code>/docs</code>.</li>
+</ul>
+</section>
+
+</main>
+</body>
+</html>

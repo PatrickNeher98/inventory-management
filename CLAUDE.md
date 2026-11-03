@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 Factory Inventory Management System Demo with GitHub integration - Full-stack application with Vue 3 frontend, Python FastAPI backend, and in-memory mock data (no database).
 
 > ⚠️ **This repository and any fork you create are PUBLIC.** Do not commit credentials, internal hostnames, or private registry URLs. `client/.npmrc` pins the public npm registry and `client/package-lock.json` is gitignored to prevent locally-configured registries from leaking into commits — leave both in place.
@@ -30,17 +32,41 @@ Use the Task tool with these specialized subagents for appropriate tasks:
 - **Backend**: Python FastAPI (port 8001)
 - **Data**: JSON files in `server/data/` loaded via `server/mock_data.py`
 
-## Quick Start
+## Commands
 
 ```bash
-# Backend
-cd server
-uv run python main.py
+# Start / stop both servers (or use the /start and /stop skills)
+./scripts/start.sh
+./scripts/stop.sh
 
-# Frontend
-cd client
-npm install && npm run dev
+# Backend only (port 8001, API docs at /docs)
+cd server && uv sync && uv run python main.py
+
+# Frontend only (port 3000) - run `npm install` first, otherwise `vite: command not found`
+cd client && npm install && npm run dev
+cd client && npm run build        # production build -> client/dist/
+
+# Backend tests (pytest config lives in tests/, so run from there)
+cd tests && uv run --project ../server pytest
+cd tests && uv run --project ../server pytest backend/test_inventory.py::TestName::test_name   # single test
+cd tests && uv run --project ../server pytest --cov=../server                                  # coverage
+
+# Regenerate JSON mock data
+cd server && uv run python generate_data.py
 ```
+
+There is no frontend test suite and no linter configured.
+
+## Architecture
+
+- **No database.** `server/mock_data.py` loads every `server/data/*.json` file into module-level lists at import time. `server/main.py` imports them directly and filters in memory (`apply_filters`, `filter_by_month`). Changes are never persisted; restart the server to reload edited JSON.
+- **Backend** is a single file, `server/main.py`: Pydantic models, CORS (`*`), and all routes. Most list endpoints use `response_model`, so JSON fields not declared in the model are silently dropped. Dashboard summary and reports endpoints compute aggregates on the fly.
+- **Frontend API base URL is hardcoded** to `http://localhost:8001/api` in `client/src/api.js` (no Vite proxy). Each method there maps filter objects to query params and skips values equal to `'all'`.
+- **Shared filter state** is a module-level singleton in `client/src/composables/useFilters.js` (4 refs). `getCurrentFilters()` converts it to API params (period becomes `month`). Views and `FilterBar.vue` share the same refs, so changing a filter anywhere affects every view.
+- **i18n**: `composables/useI18n.js` with `locales/en.js` and `locales/ja.js` (`t('a.b.c')`, falls back to English). Locale is stored in `localStorage` and drives the currency (en -> USD, ja -> JPY, see `utils/currency.js`). New UI strings need keys in both locale files.
+- **Routing** is in `client/src/main.js`. `Backlog.vue` exists in `views/` but has no route registered.
+- **Tests** (`tests/backend/`) use FastAPI `TestClient` through the `client` fixture in `conftest.py`, which puts `server/` on `sys.path`. Tests run against the real JSON data.
+- `.claude/` holds project subagents, slash commands and the `backend-api-test` skill used by the rules above.
 
 ## Key Patterns
 

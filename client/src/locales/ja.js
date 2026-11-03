@@ -4,10 +4,21 @@ export default {
     overview: '概要',
     inventory: '在庫',
     orders: '注文',
+    restocking: '補充発注',
     finance: '財務',
     demandForecast: '需要予測',
     companyName: '触媒コンポーネンツ',
-    subtitle: '在庫管理システム'
+    subtitle: '在庫管理システム',
+    reports: 'レポート',
+    sidebar: 'サイドバー',
+    skipToContent: 'メインコンテンツへスキップ',
+    language: '言語',
+    accountMenu: 'アカウントメニュー',
+    main: 'メインナビゲーション',
+    openMenu: 'ナビゲーションメニュー',
+    closeMenu: 'ナビゲーションメニューを閉じる',
+    collapse: 'サイドバーを折りたたむ',
+    expand: 'サイドバーを展開'
   },
 
   // Dashboard
@@ -104,6 +115,14 @@ export default {
   // Orders
   orders: {
     title: '注文',
+    submittedOrders: '発注済み注文',
+    noSubmittedOrders: '発注済みの注文はまだありません',
+    day: '{count}日',
+    submittedLoadError: '発注済み注文の読み込みに失敗しました',
+    submittedStatus: '発注済み',
+    leadTime: 'リードタイム',
+    days: '{count}日',
+    expectedDelivery: '納品予定日',
     description: '顧客注文の表示と管理',
     allOrders: 'すべての注文',
     totalOrders: '総注文数',
@@ -214,6 +233,36 @@ export default {
     increasing: '増加',
     stable: '安定',
     decreasing: '減少'
+  },
+
+  restocking: {
+    title: '補充発注',
+    description: '予算を設定し、需要予測に基づく推奨在庫を発注します',
+    budget: '予算',
+    recommendations: '推奨アイテム',
+    noRecommendations: 'この予算では推奨される補充はありません',
+    totalCost: '合計コスト',
+    remainingBudget: '残予算',
+    selectedItems: '選択アイテム',
+    placeOrder: '発注する',
+    placing: '発注中...',
+    overBudget: '選択合計が予算を超えています',
+    orderPlaced: '注文 {orderNumber} を発注しました。リードタイム: {days}日',
+    invalidRow: '数量が無効です - 注文から除外されます',
+    loadError: '推奨の読み込みに失敗しました',
+    orderError: '発注に失敗しました',
+    table: {
+      select: '選択',
+      sku: 'SKU',
+      name: '製品',
+      trend: 'トレンド',
+      shortfall: '不足数',
+      quantity: '数量',
+      unitCost: '単価',
+      lineTotal: '小計',
+      leadTime: 'リードタイム',
+      supplier: 'サプライヤー'
+    }
   },
 
   // Priority
@@ -328,6 +377,13 @@ export default {
 
   // Product Names
   productNames: {
+    'Industrial Widget Type A': '産業用ウィジェット タイプA',
+    'Steel Bearing Assembly': 'スチールベアリング組立',
+    'High-Temperature Gasket': '高温ガスケット',
+    'Electric Motor 5HP': '電動モーター 5HP',
+    'Oil Filter Cartridge': 'オイルフィルターカートリッジ',
+    'Pressure Relief Valve': '圧力リリーフバルブ',
+    'Logic Controller Board': 'ロジックコントローラーボード',
     'Single Layer PCB Assembly': '単層PCB組立',
     'Dual Layer PCB Assembly': '二層PCB組立',
     'Multi Layer PCB Assembly': '多層PCB組立',

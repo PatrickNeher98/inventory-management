@@ -4,10 +4,21 @@ export default {
     overview: 'Overview',
     inventory: 'Inventory',
     orders: 'Orders',
+    restocking: 'Restocking',
     finance: 'Finance',
     demandForecast: 'Demand Forecast',
     companyName: 'Catalyst Components',
-    subtitle: 'Inventory Management System'
+    subtitle: 'Inventory Management System',
+    reports: 'Reports',
+    sidebar: 'Sidebar',
+    skipToContent: 'Skip to content',
+    language: 'Language',
+    accountMenu: 'Account menu',
+    main: 'Main navigation',
+    openMenu: 'Navigation menu',
+    closeMenu: 'Close navigation menu',
+    collapse: 'Collapse sidebar',
+    expand: 'Expand sidebar'
   },
 
   // Dashboard
@@ -104,6 +115,14 @@ export default {
   // Orders
   orders: {
     title: 'Orders',
+    submittedOrders: 'Submitted Orders',
+    noSubmittedOrders: 'No submitted orders yet',
+    day: '{count} day',
+    submittedLoadError: 'Failed to load submitted orders',
+    submittedStatus: 'Submitted',
+    leadTime: 'Lead Time',
+    days: '{count} days',
+    expectedDelivery: 'Expected Delivery',
     description: 'View and manage customer orders',
     allOrders: 'All Orders',
     totalOrders: 'Total Orders',
@@ -214,6 +233,36 @@ export default {
     increasing: 'increasing',
     stable: 'stable',
     decreasing: 'decreasing'
+  },
+
+  restocking: {
+    title: 'Restocking',
+    description: 'Set a budget and order recommended stock based on demand forecasts',
+    budget: 'Budget',
+    recommendations: 'Recommended Items',
+    noRecommendations: 'No restocking recommended for this budget',
+    totalCost: 'Total Cost',
+    remainingBudget: 'Remaining Budget',
+    selectedItems: 'Selected Items',
+    placeOrder: 'Place Order',
+    placing: 'Placing...',
+    overBudget: 'Selected total exceeds the budget',
+    orderPlaced: 'Order {orderNumber} placed. Lead time: {days} days.',
+    invalidRow: 'Invalid quantity - row excluded from order',
+    loadError: 'Failed to load recommendations',
+    orderError: 'Failed to place order',
+    table: {
+      select: 'Select',
+      sku: 'SKU',
+      name: 'Product',
+      trend: 'Trend',
+      shortfall: 'Shortfall',
+      quantity: 'Quantity',
+      unitCost: 'Unit Cost',
+      lineTotal: 'Line Total',
+      leadTime: 'Lead Time',
+      supplier: 'Supplier'
+    }
   },
 
   // Priority
